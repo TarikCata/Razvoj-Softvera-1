@@ -1,0 +1,151 @@
+<p>student-maticnaknjiga works!</p>
+
+<div>
+  <div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">Student ID</label>
+    <div class="col-sm-4">
+      <input disabled class="form-control" [value]="currentStudent?.id" />
+    </div>
+  </div>
+
+  <div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">Student ime</label>
+    <div class="col-sm-4">
+      <input class="form-control" disabled [value]="currentStudent?.ime" />
+    </div>
+  </div>
+
+  <div class="mb-3 row">
+    <label class="col-sm-2 col-form-label">Student prezime</label>
+    <div class="col-sm-4">
+      <input class="form-control" disabled [value]="currentStudent?.prezime" />
+    </div>
+  </div>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Ak godina</th>
+        <th>Godina</th>
+        <th>Obnova</th>
+        <th>
+          Zimski semestar<br />
+          <input value="Upis" disabled /> |
+          <input value="Ovjera" disabled />
+        </th>
+        <th>Evidentirao</th>
+        <th>Akcija</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let godina of upisaneGodine">
+        <td>{{ godina.id }}</td>
+        <td>{{ godina.akademskaGodina.opis }}</td>
+        <td>{{ godina.godinaStudija }}</td>
+        <td>{{ godina.obnova ? "Da" : "Ne" }}</td>
+        <td>
+          <input [value]="currentDate | date : 'yyyy-MM-dd'" disabled /> |
+          <input />
+        </td>
+        <td></td>
+        <td><a class="btn btn-link">Ovjeri zimski semestar </a> <br /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary" (click)="openCloseDialog()">
+    Upis u zimski semestar
+  </button>
+</div>
+
+<div
+  *ngIf="isOpen"
+  class="modal fade show"
+  id="exampleModalLive"
+  tabindex="-1"
+  aria-labelledby="exampleModalLiveLabel"
+  aria-modal="true"
+  role="dialog"
+  style="display: block"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLiveLabel">
+          Novi semestar za
+          {{ currentStudent?.ime + " " + currentStudent?.prezime }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="openCloseDialog()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Datum</label>
+          <input
+            [value]="currentDate | date : 'yyyy-MM-dd'"
+            class="form-control"
+            type="date"
+            placeholder="Datum"
+            [(ngModel)]="currentDate"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Godina studija</label>
+          <input
+            class="form-control"
+            type="number"
+            placeholder="Godina studija"
+            [(ngModel)]="godinaStudija"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Ak godina</label>
+          <select class="form-control" [(ngModel)]="akademska">
+            <option *ngFor="let godina of akademskeGodine" [value]="godina.id">
+              {{ godina.opis }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Cijena školarine</label>
+          <input
+            class="form-control"
+            placeholder="Cijena školarine"
+            type="number"
+            [(ngModel)]="cijena"
+          />
+        </div>
+
+        <div class="mb-3 form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            placeholder="Obnova godine"
+            [(ngModel)]="isObnova"
+          />
+          <label class="form-check-label">Obnova godine</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="openCloseDialog()"
+        >
+          Close
+        </button>
+        <button type="submit" class="btn btn-primary" (click)="saveGodinu()">
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

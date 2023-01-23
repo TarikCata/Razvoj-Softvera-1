@@ -1,0 +1,73 @@
+<p>studenti works!</p>
+
+<div>
+  <input [(ngModel)]="filter_ime_prezime" type="checkbox" /> Filter by
+  <span style="font-weight: bold">Ime / prezime</span> <br />
+  <input
+    [(ngModel)]="ime_prezime"
+    (ngModelChange)="filterStudents()"
+    [disabled]="filter_ime_prezime ? false : true"
+  /><br />
+  <hr />
+
+  <input [(ngModel)]="filter_opstina" type="checkbox" /> Filter by
+  <span style="font-weight: bold">Opština rođenja</span> <br />
+  <input
+    [(ngModel)]="opstina"
+    (ngModelChange)="filterStudents()"
+    [disabled]="filter_opstina ? false : true"
+  /><br />
+  <hr />
+</div>
+<table class="table table-warning">
+  <tr>
+    <th>ID</th>
+    <th>Ime</th>
+    <th>Prezime</th>
+    <th>Broj indeksa</th>
+    <th>Drzava rođenja</th>
+    <th>Opstina rođenja</th>
+    <th>Datum dodavanja</th>
+    <th>Profilna slika</th>
+    <th>Akcija</th>
+  </tr>
+  <tbody>
+    <tr *ngFor="let student of this.studentData">
+      <td>{{ student.id }}</td>
+      <td>{{ student.ime }}</td>
+      <td>{{ student.prezime }}</td>
+      <td>{{ student.brojIndeksa }}</td>
+      <td>
+        {{
+          student.opstina_rodjenja != null
+            ? student.opstina_rodjenja.drzava.naziv
+            : ""
+        }}
+      </td>
+      <td>
+        {{
+          student.opstina_rodjenja != null
+            ? student.opstina_rodjenja.description
+            : ""
+        }}
+      </td>
+      <td>{{ student.datum_rodjenja }}</td>
+      <td>
+        <img class="profilna-slika" src="{{ student.slika_korisnika }}" />
+      </td>
+      <td>
+        <button>Obrisi</button>
+        <button (click)="openDialog(student)">Uredi</button>
+        <button (click)="redirect(student.id)">Maticna knjiga</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button class="form-label" (click)="openDialog()">Novi student</button>
+<app-student-edit
+  *ngIf="isDialogOpen"
+  [dialogData]="dialogData"
+  (callback)="this.testirajWebApi()"
+  (closeDialog)="this.closeDialog()"
+></app-student-edit>
