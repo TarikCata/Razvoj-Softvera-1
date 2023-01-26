@@ -28,11 +28,10 @@ export class StudentiComponent implements OnInit {
   }
 
   testirajWebApi(params?: HttpParams): void {
+    const url = `${MojConfig.adresa_servera}/Student/GetAll`;
     this.httpKlijent
-      .get(MojConfig.adresa_servera + '/Student/GetAll', { params })
-      .subscribe((response) => {
-        this.studentData = response;
-      });
+      .get(url, { params })
+      .subscribe((res) => (this.studentData = res));
   }
 
   filterStudents = () => {
@@ -45,21 +44,21 @@ export class StudentiComponent implements OnInit {
   openDialog = (student?: any) => {
     this.isDialogOpen = true;
     if (!!student) {
-      const { ime, prezime, id, broj_indeksa, ...rest } = student;
+      const { ime, prezime, id, broj_indeksa, opstina_rodjenja } = student;
       this.dialogData = {
-        studentData: { id, ime, prezime, broj_indeksa },
         title: 'Edit Student',
+        studentData: { id, ime, prezime, broj_indeksa, opstina_rodjenja },
       };
       return;
     }
     this.dialogData = {
+      title: 'Novi Student',
       studentData: {
         id: 0,
         ime: !!this.ime_prezime ? this.ime_prezime : '',
         prezime: '',
         broj_indeksa: '',
       },
-      title: 'Novi Student',
     };
   };
 

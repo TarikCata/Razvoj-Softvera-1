@@ -30,8 +30,6 @@ namespace FIT_Api_Examples.Modul2.Controllers
             thisGodina.AkademskaGodina = akademskaGodina;
             thisGodina.CijenaSkolarine = upisGodineVM.CijenaSkolarine;
             thisGodina.Obnova = upisGodineVM.Obnova;
-            thisGodina.NapomenaZaOvjeru = upisGodineVM?.NapomenaZaOvjeru;
-            thisGodina.DatumOvjere = (DateTime)upisGodineVM.DatumOvjere;
             thisGodina.DatumUpisa = DateTime.Now;
             _dbContext.UpisanaGodina.Add(thisGodina);
             _dbContext.SaveChanges();
@@ -42,6 +40,19 @@ namespace FIT_Api_Examples.Modul2.Controllers
         public ActionResult<List<UpisanaGodina>> GetAll()
         {
             return Ok(_dbContext.UpisanaGodina.Include(g => g.AkademskaGodina).ToList());
+        }
+        
+        [HttpPut]
+        public ActionResult<List<UpisanaGodina>> Ovjeri([FromBody] OvjeriGodinuVM vm)
+        {
+            var thisGodina = _dbContext.UpisanaGodina.Find(vm.Id);
+            if (thisGodina == null)
+                return BadRequest("Can't find year!");
+            thisGodina.NapomenaZaOvjeru = vm.Napomena;
+            thisGodina.DatumOvjere = vm.DatumOvjere;
+            _dbContext.UpisanaGodina.Update(thisGodina);
+            _dbContext.SaveChanges();
+            return Ok(thisGodina);
         }
     }
 }

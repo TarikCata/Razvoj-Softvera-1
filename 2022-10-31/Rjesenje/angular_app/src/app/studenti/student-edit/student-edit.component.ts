@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  OnChanges,
+} from '@angular/core';
 import { MojConfig } from 'src/app/moj-config';
 import { HttpClient } from '@angular/common/http';
 
@@ -10,13 +17,18 @@ declare function porukaError(a: string): any;
   templateUrl: './student-edit.component.html',
   styleUrls: ['./student-edit.component.css'],
 })
-export class StudentEditComponent implements OnInit {
+export class StudentEditComponent implements OnInit, OnChanges {
   @Input() dialogData: any;
   @Output() callback = new EventEmitter<boolean>();
   @Output() closeDialog = new EventEmitter<boolean>();
   opstinaData: any;
   opstina: any;
+
   constructor(private httpClient: HttpClient) {}
+
+  ngOnChanges() {
+    if (!!this.opstinaData) this.getDefaultOpstina();
+  }
 
   ngOnInit() {
     this.loadOpstine();
@@ -24,12 +36,19 @@ export class StudentEditComponent implements OnInit {
 
   loadOpstine = () => {
     const url = `${MojConfig.adresa_servera}/Opstina/GetByAll`;
-    this.httpClient.get(url).subscribe((res) => {
+    this.httpClient.get(url, MojConfig.http_opcije()).subscribe((res) => {
       if (!!res) {
         this.opstinaData = res;
-        this.opstina = this.opstinaData.find(({ id }: any) => id == 2).id;
+        this.getDefaultOpstina();
       }
     });
+  };
+
+  getDefaultOpstina = () => {
+    const { opstina_rodjenja } = this.dialogData.studentData;
+    if (!opstina_rodjenja)
+      this.opstina = this.opstinaData.find(({ id }: any) => id == 2).id;
+    else this.opstina = opstina_rodjenja.id;
   };
 
   saveChanges = () => {

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MojConfig } from '../moj-config';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 
 declare function porukaSuccess(a: string): any;
 declare function porukaError(a: string): any;
@@ -16,18 +15,18 @@ export class StudentMaticnaknjigaComponent implements OnInit {
   upisaneGodine: any;
   currentStudent: any;
   isOpen: boolean = false;
-  currentDate = new Date();
+  currentDate = new Date().toISOString().slice(0, 10);
   akademskeGodine: any;
   akademska: any;
   isObnova = false;
   godinaStudija: number;
   cijena: number;
-  datum: any;
-  constructor(
-    private httpKlijent: HttpClient,
-    private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) {}
+  napomena: string;
+  headerTitle: string;
+  isOvjera: boolean = false;
+  selectedGodinaId: number;
+
+  constructor(private httpKlijent: HttpClient, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     let id;
@@ -51,7 +50,7 @@ export class StudentMaticnaknjigaComponent implements OnInit {
     const url = `${MojConfig.adresa_servera}/Student/GetById?id=${id}`;
     this.httpKlijent.get(url, MojConfig.http_opcije()).subscribe((res: any) => {
       if (!!res) {
-        const { id, ime, prezime, ...rest } = res;
+        const { id, ime, prezime } = res;
         this.currentStudent = { id, ime, prezime };
       } else porukaError('Greska kod ucitavanja studenta!');
     });
@@ -61,9 +60,11 @@ export class StudentMaticnaknjigaComponent implements OnInit {
     const url = `${MojConfig.adresa_servera}/UpisaneGodine/GetAll`;
     this.httpKlijent.get(url, MojConfig.http_opcije()).subscribe((res: any) => {
       if (!!res) this.upisaneGodine = res;
-      else porukaError('Greska kod ucitavanja studenta!');
+      else porukaError('Greska kod ucitavanja godina!');
     });
   };
+
+  saveChanges = () => (this.isOvjera ? this.ovjeri() : this.saveGodinu());
 
   saveGodinu = () => {
     const url = `${MojConfig.adresa_servera}/UpisaneGodine/Add`;
@@ -71,7 +72,6 @@ export class StudentMaticnaknjigaComponent implements OnInit {
       godinaStudija: this.godinaStudija,
       akademskaGodinaId: this.akademska,
       cijenaSkolarine: this.cijena,
-      datumOvjere: this.currentDate,
       obnova: this.isObnova,
     };
     this.httpKlijent
@@ -80,9 +80,40 @@ export class StudentMaticnaknjigaComponent implements OnInit {
         if (!!res) {
           this.getGodine();
           this.isOpen = false;
+          porukaSuccess('Uspjesno dodana godina!');
         } else porukaError('Greska kod dodavanja godine!');
       });
   };
 
-  openCloseDialog = () => (this.isOpen = !this.isOpen);
+  ovjeri = () => {
+    const url = `${MojConfig.adresa_servera}/UpisaneGodine/Ovjeri`;
+    const body = {
+      id: this.selectedGodinaId,
+      napomena: this.napomena,
+    };
+    this.httpKlijent
+      .put(url, { ...body }, MojConfig.http_opcije())
+      .subscribe((res) => {
+        if (!!res) {
+          porukaSuccess('Uspjesno ovjereno!');
+          this.getGodine();
+          this.selectedGodinaId = 0;
+          this.isOvjera = false;
+          this.isOpen = false;
+        } else porukaError('Greska kod ovjeravanja!');
+      });
+  };
+
+  openCloseDialog = () => {
+    this.headerTitle = `Nova godina za ${this.currentStudent.ime} ${this.currentStudent.prezime}`;
+    this.isOvjera = false;
+    this.isOpen = !this.isOpen;
+  };
+
+  openOvjera = (id: number) => {
+    this.selectedGodinaId = id;
+    this.headerTitle = 'Ovjera';
+    this.isOpen = !this.isOpen;
+    this.isOvjera = !this.isOvjera;
+  };
 }

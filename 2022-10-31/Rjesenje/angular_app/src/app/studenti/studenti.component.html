@@ -1,5 +1,3 @@
-<p>studenti works!</p>
-
 <div>
   <input [(ngModel)]="filter_ime_prezime" type="checkbox" /> Filter by
   <span style="font-weight: bold">Ime / prezime</span> <br />
@@ -19,7 +17,7 @@
   /><br />
   <hr />
 </div>
-<table class="table table-warning">
+<table class="table table-secondary">
   <tr>
     <th>ID</th>
     <th>Ime</th>
@@ -36,7 +34,7 @@
       <td>{{ student.id }}</td>
       <td>{{ student.ime }}</td>
       <td>{{ student.prezime }}</td>
-      <td>{{ student.brojIndeksa }}</td>
+      <td>{{ student.broj_indeksa }}</td>
       <td>
         {{
           student.opstina_rodjenja != null
@@ -53,7 +51,7 @@
       </td>
       <td>{{ student.datum_rodjenja }}</td>
       <td>
-        <img class="profilna-slika" src="{{ student.slika_korisnika }}" />
+        <img src="{{ student.slika_korisnika }}" width="40" />
       </td>
       <td>
         <button>Obrisi</button>
