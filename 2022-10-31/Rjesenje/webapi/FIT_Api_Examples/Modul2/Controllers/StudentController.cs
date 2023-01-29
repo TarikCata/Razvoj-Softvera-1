@@ -77,5 +77,16 @@ namespace FIT_Api_Examples.Modul2.Controllers
             return Ok(student);
         }
 
+        [HttpDelete("{id}")]
+        public ActionResult<Student> Delete(int id)
+        {
+            var thisStudent = _dbContext.Student.Find(id);
+            if(thisStudent == null)
+                return NotFound();
+            _dbContext.Student.Remove(thisStudent);
+            _dbContext.SaveChanges();
+            return Ok(thisStudent);
+        }
+
     }
 }
