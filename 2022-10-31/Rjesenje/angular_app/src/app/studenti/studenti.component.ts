@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { MojConfig } from '../moj-config';
 import { Router } from '@angular/router';
 
@@ -63,6 +63,16 @@ export class StudentiComponent implements OnInit {
   };
 
   closeDialog = () => (this.isDialogOpen = false);
+
+  deleteStudent = (id: number) => {
+    const url = `${MojConfig.adresa_servera}/Student/Delete/${id}`;
+    this.httpKlijent.delete(url, MojConfig.http_opcije()).subscribe((res) => {
+      if (!!res) {
+        porukaSuccess('Uspjesno izbrisan');
+        this.testirajWebApi();
+      } else porukaError('Greska kod brisanja studenta!');
+    });
+  };
 
   redirect = (id: number) =>
     this.router.navigate(['student-maticnaknjiga', id]);
