@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FIT_Api_Examples.Modul3_MaticnaKnjiga.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,7 +12,9 @@ namespace FIT_Api_Examples.Modul2.Models
         public int Id { get; set; }
         public DateTime DatumUpisa { get; set; }
         public int GodinaStudija { get; set; }
-
+        [ForeignKey("StudentId")]
+        public int? StudentId { get; set; }
+        public Student Student { get; set; }
         [ForeignKey("AkademskaId")]
         public int? AkademskaId { get; set; }
         public AkademskaGodina AkademskaGodina { get; set; }

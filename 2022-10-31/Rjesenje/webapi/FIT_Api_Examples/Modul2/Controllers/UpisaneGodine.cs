@@ -26,6 +26,8 @@ namespace FIT_Api_Examples.Modul2.Controllers
         {
             var thisGodina = new UpisanaGodina();
             var akademskaGodina = _dbContext.AkademskaGodina.Find(upisGodineVM.AkademskaGodinaId);
+            var student = _dbContext.Student.Find(upisGodineVM.StudentId);
+            thisGodina.Student = student;
             thisGodina.GodinaStudija = upisGodineVM.GodinaStudija;
             thisGodina.AkademskaGodina = akademskaGodina;
             thisGodina.CijenaSkolarine = upisGodineVM.CijenaSkolarine;
@@ -37,9 +39,14 @@ namespace FIT_Api_Examples.Modul2.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<UpisanaGodina>> GetAll()
+        public ActionResult<List<UpisanaGodina>> GetAll(int studentId)
         {
-            return Ok(_dbContext.UpisanaGodina.Include(g => g.AkademskaGodina).ToList());
+            var godine = _dbContext.UpisanaGodina
+                .Include(g => g.AkademskaGodina)
+                .Include(g => g.Student)
+                .Where(g => studentId == 0 || g.StudentId == studentId)
+                .ToList();
+            return Ok(godine);
         }
         
         [HttpPut]

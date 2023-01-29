@@ -34,7 +34,7 @@ export class StudentMaticnaknjigaComponent implements OnInit {
       id = paramMap.get('id');
     });
     if (!!id && typeof id != 'number') this.getStudent(id);
-    this.getGodine();
+    this.getGodine(id);
     this.getAkademskeGodine();
   }
 
@@ -56,8 +56,8 @@ export class StudentMaticnaknjigaComponent implements OnInit {
     });
   };
 
-  getGodine = () => {
-    const url = `${MojConfig.adresa_servera}/UpisaneGodine/GetAll`;
+  getGodine = (id: number) => {
+    const url = `${MojConfig.adresa_servera}/UpisaneGodine/GetAll?studentId=${id}`;
     this.httpKlijent.get(url, MojConfig.http_opcije()).subscribe((res: any) => {
       if (!!res) this.upisaneGodine = res;
       else porukaError('Greska kod ucitavanja godina!');
@@ -68,7 +68,9 @@ export class StudentMaticnaknjigaComponent implements OnInit {
 
   saveGodinu = () => {
     const url = `${MojConfig.adresa_servera}/UpisaneGodine/Add`;
+    const { id } = this.currentStudent;
     const obj = {
+      studentId: id,
       godinaStudija: this.godinaStudija,
       akademskaGodinaId: this.akademska,
       cijenaSkolarine: this.cijena,
@@ -78,7 +80,7 @@ export class StudentMaticnaknjigaComponent implements OnInit {
       .post(url, { ...obj }, MojConfig.http_opcije())
       .subscribe((res) => {
         if (!!res) {
-          this.getGodine();
+          this.getGodine(id);
           this.isOpen = false;
           porukaSuccess('Uspjesno dodana godina!');
         } else porukaError('Greska kod dodavanja godine!');
@@ -96,7 +98,7 @@ export class StudentMaticnaknjigaComponent implements OnInit {
       .subscribe((res) => {
         if (!!res) {
           porukaSuccess('Uspjesno ovjereno!');
-          this.getGodine();
+          this.getGodine(this.currentStudent.id);
           this.selectedGodinaId = 0;
           this.isOvjera = false;
           this.isOpen = false;
