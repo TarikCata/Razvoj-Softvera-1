@@ -1,9 +1,29 @@
-<p>studenti works!</p>
+<input type="checkbox" [(ngModel)]="checked_imeprezime" />
+<p>
+  Filter by ime i prezime
+  <br />
+  <input
+    [(ngModel)]="filter_imeprezime"
+    [disabled]="checked_imeprezime ? false : true"
+    (ngModelChange)="filter()"
+  />
+</p>
+<input type="checkbox" [(ngModel)]="checked_opstina" />
+<p>
+  Filter by opstina
+  <br />
+  <input
+    [(ngModel)]="filter_opstina"
+    [disabled]="checked_opstina ? false : true"
+    (ngModelChange)="filter()"
+  />
+</p>
 
+<button class="btn btn-primary my-3" (click)="openCloseDialog()">
+  Novi student
+</button>
 
-<input type="checkbox" ><p>Filter by ime i prezime <input [(ngModel)]="filter_imeprezime" /></p>
-<input type="checkbox" ><p>Filter by opstina <input [(ngModel)]="filter_opstina" /></p>
-<table class="table table-warning">
+<table class="table table-light">
   <tr>
     <th>ID</th>
     <th>Ime</th>
@@ -13,29 +33,50 @@
     <th>Opstina rođenja</th>
     <th>Datum dodavanja</th>
     <th>Profilna slika</th>
-    <th>Akcija</th>
+    <th style="text-align: center">Akcija</th>
   </tr>
   <tbody>
-    <tr *ngFor="let s of studentPodaci">
-      <td>{{ s.id }}</td>
-      <td>{{ s.ime }}</td>
-      <td>{{ s.prezime }}</td>
-      <td>{{ s.brojIndeksa }}</td>
+    <tr *ngFor="let student of studentPodaci">
+      <td>{{ student.id }}</td>
+      <td>{{ student.ime }}</td>
+      <td>{{ student.prezime }}</td>
+      <td>{{ student.broj_indeksa }}</td>
       <td>
-        {{ s.opstina_rodjenja != null ? s.opstina_rodjenja.drzava.naziv : "" }}
+        {{
+          student.opstina_rodjenja != null
+            ? student.opstina_rodjenja.drzava.naziv
+            : ""
+        }}
       </td>
       <td>
-        {{ s.opstina_rodjenja != null ? s.opstina_rodjenja.description : "" }}
+        {{
+          student.opstina_rodjenja != null
+            ? student.opstina_rodjenja.description
+            : ""
+        }}
       </td>
-      <td>{{ s.datumRodjenja }}</td>
-      <td><img class="profilna-slika" src="{{ s.slika_korisnika }}" /></td>
+      <td>{{ student.created_time | date : "dd.MM.yyyy hh:ss" }}</td>
       <td>
-        <button>Obrisi</button>
-        <button>Uredi</button>
-        <button>Maticna knjiga</button>
+        <img class="profilna-slika" src="{{ student.slika_korisnika }}" />
+      </td>
+      <td style="display: flex; gap: 5px; justify-content: center">
+        <button class="btn btn-danger" (click)="deleteStudent(student)">
+          Obrisi
+        </button>
+        <button class="btn btn-secondary" (click)="openCloseDialog(student)">
+          Uredi
+        </button>
+        <button class="btn btn-link" (click)="redirect(student.id)">
+          Maticna knjiga
+        </button>
       </td>
     </tr>
   </tbody>
 </table>
 
-<button class="form-label">Novi student</button>
+<app-student-edit
+  *ngIf="isModalOpen"
+  [dialogData]="dialogData"
+  (callback)="testirajWebApi()"
+  (closeDialog)="closeDialog()"
+></app-student-edit>

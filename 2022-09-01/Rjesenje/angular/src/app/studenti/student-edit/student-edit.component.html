@@ -1,1 +1,73 @@
-<p>edit-student works!</p>
+<div
+  style="
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(100%, 10%);
+    width: 500px;
+  "
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLiveLabel">
+          {{ dialogData.title }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="close()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Ime</label>
+          <input
+            class="form-control"
+            type="text"
+            placeholder="Ime"
+            [defaultValue]="dialogData.studentData.ime"
+            [(ngModel)]="dialogData.studentData.ime"
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Prezime</label>
+          <input
+            class="form-control"
+            placeholder="Prezime"
+            [defaultValue]="dialogData.studentData.prezime"
+            [(ngModel)]="dialogData.studentData.prezime"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Br. Indeksa</label>
+          <input
+            class="form-control"
+            placeholder="Broj indeksa"
+            [defaultValue]="dialogData.studentData.broj_indeksa"
+            [(ngModel)]="dialogData.studentData.broj_indeksa"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label>Opstina</label>
+          <select class="form-control" [(ngModel)]="opstina">
+            <option *ngFor="let opstina of sveOpstine" [value]="opstina.id">
+              {{ opstina.opis }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveChanges()">
+          Save changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

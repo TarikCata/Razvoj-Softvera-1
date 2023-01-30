@@ -35,7 +35,6 @@ namespace FIT_Api_Examples.Helper.AutentifikacijaAutorizacija
         public static LoginInformacije GetLoginInfo(this HttpContext httpContext)
         {
             var token = httpContext.GetAuthToken();
-
             return new LoginInformacije(token);
         }
     

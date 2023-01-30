@@ -20,6 +20,7 @@ namespace FIT_Api_Examples.Modul2.Controllers
     public class StudentController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
+        private string errPoruka = "You are not allowed to do this operation!";
 
         public StudentController(ApplicationDbContext dbContext)
         {
@@ -30,21 +31,64 @@ namespace FIT_Api_Examples.Modul2.Controllers
         public ActionResult Get(int id)
         {
             if (!HttpContext.GetLoginInfo().isLogiran)
-                return Forbid();
+                return BadRequest("You are not logged in!");
 
             return Ok(_dbContext.Student.Include(s => s.opstina_rodjenja.drzava).FirstOrDefault(s => s.id == id)); ;
         }
 
         [HttpGet]
-        public ActionResult<List<Student>> GetAll(string ime_prezime)
+        public ActionResult<List<Student>> GetAll(string ime_prezime,string opstina)
         {
             var data = _dbContext.Student
                 .Include(s => s.opstina_rodjenja.drzava)
-                .Where(x => ime_prezime == null || (x.ime + " " + x.prezime).StartsWith(ime_prezime) || (x.prezime + " " + x.ime).StartsWith(ime_prezime))
-                .OrderByDescending(s => s.id)
+                .Where(student =>(
+                        ime_prezime == null || 
+                        (student.ime + " " + student.prezime).ToLower().StartsWith(ime_prezime.ToLower()) ||
+                        (student.prezime + " " + student.ime).ToLower().StartsWith(ime_prezime.ToLower())
+                ) && (opstina == null || (student.opstina_rodjenja.description).ToLower().StartsWith(opstina.ToLower()))
+                ).OrderByDescending(s => s.id)
                 .AsQueryable();
-            return data.Take(100).ToList();
+            return data.Take(10).ToList();
+        }
+
+        [HttpPost]
+        public ActionResult<Student> Upsert([FromBody] StudentAddVM vm)
+        {
+           var opstina = _dbContext.Opstina.Find(vm.opstina_rodjenja_id);
+           if (vm.Id == 0)
+           {
+                var noviStudent = new Student();
+                noviStudent.ime = vm.ime;
+                noviStudent.broj_indeksa = vm.broj_indeksa;
+                noviStudent.prezime = vm.prezime;
+                noviStudent.opstina_rodjenja_id = vm.opstina_rodjenja_id;
+                noviStudent.opstina_rodjenja = opstina;
+                _dbContext.Student.Add(noviStudent);
+                _dbContext.SaveChanges();
+                return Ok(noviStudent);
+            }
+            var student = _dbContext.Student.Find(vm.Id);
+            student.ime = vm.ime;
+            student.broj_indeksa = vm.broj_indeksa;
+            student.prezime = vm.prezime;
+            student.opstina_rodjenja_id = vm.opstina_rodjenja_id;
+            student.opstina_rodjenja = opstina;
+           _dbContext.Student.Update(student);
+            _dbContext.SaveChanges();
+           return Ok(student);
+        }
+
+        [HttpDelete("{id}")]
+        public ActionResult<bool> Delete(int id)
+        {
+            var student = _dbContext.Student.Find(id);
+            if (student == null)
+                return BadRequest("Can't find student!");
+            _dbContext.Student.Remove(student);
+            _dbContext.SaveChanges();
+            return Ok(true);
         }
 
     }
 }
+                
