@@ -79,14 +79,19 @@ export class StudentMaticnaknjigaComponent implements OnInit {
       akademskaId: this.akademskaId,
       studentId: id,
     };
-    this.http
+    const res = this.http
       .post(url, { ...body }, MojConfig.http_opcije())
-      .subscribe((res) => {
-        if (!!res) {
+      .toPromise();
+    res
+      .then((data) => {
+        if (!!data) {
           this.isOpen = false;
-          this.getGodine(id);
-          porukaSuccess('Uspjesno dodana godina!');
-        } else porukaError('Greska kod dodavanja');
+        }
+      })
+      .catch((err) => porukaError(err.error))
+      .finally(() => {
+        this.getGodine(id);
+        porukaSuccess('Uspjesno dodana godina!');
       });
   };
 

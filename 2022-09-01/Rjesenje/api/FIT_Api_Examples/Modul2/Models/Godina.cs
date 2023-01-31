@@ -1,4 +1,5 @@
-﻿using FIT_Api_Examples.Modul4_MaticnaKnjiga.Models;
+﻿using FIT_Api_Examples.Modul0_Autentifikacija.Models;
+using FIT_Api_Examples.Modul4_MaticnaKnjiga.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,6 +22,10 @@ namespace FIT_Api_Examples.Modul2.Models
         [ForeignKey("studentId")]
         public int studentId { get; set; }
         public Student Student { get; set; }
+
+        [ForeignKey(nameof(evidentiraoKorisnik))]
+        public int? evidentiraoKorisnikId { get; set; }
+        public KorisnickiNalog? evidentiraoKorisnik { get; set; }
 
     }
 }

@@ -20,7 +20,6 @@ namespace FIT_Api_Examples.Modul2.Controllers
     public class StudentController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        private string errPoruka = "You are not allowed to do this operation!";
 
         public StudentController(ApplicationDbContext dbContext)
         {
